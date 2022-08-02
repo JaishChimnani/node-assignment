@@ -1,9 +1,15 @@
+require('dotenv').config();
 require("./db/connection")
+const bodyParser=require("body-parser")
 // const userRouter=  require("./routes/routes")
-const users= require("./models/User.model")
+const User= require("./models/User.model")
+const authUser= require("./models/Auth.User.model");
 const express = require("express");
+const bcrypt   = require("bcrypt");
 
 var app =express();
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 app.use=(express.json());
 // app.use(userRouter);
 
@@ -14,6 +20,10 @@ app.get('/', (req, res) => {
 app.get('/Signup', (req, res) => {
     res.sendFile(__dirname+"/Signup.html");
 });
+app.get("/login", async (req,res)=>{
+    // res.send("login")
+    res.sendFile(__dirname+"/Login.html");
+})
 
 
 app.listen(2000,()=>{
@@ -26,7 +36,7 @@ app.post('/users',async (req, res) => {
         console.log(req.body);
         const user=new User(req.body);
         const result=await user.save();
-        res.send("Hello");
+        res.render("Hello World");
     }catch(err) {
         console.log(err);
     }
@@ -47,7 +57,7 @@ app.get('/users/:id',async (req, res) => {
         if(!result){
             return res.status(404).send();
         }else{
-
+            
             res.send(result);
         }
     }catch(err) {
@@ -67,6 +77,63 @@ app.patch("/users/:id",async (req,res)=>{
     }
 })
 
+app.post("/login",async (req,res)=>{
+    try{
+        const email=req.body.email;
+        const password=req.body.password;
+        
+        console.log(`${email}+" "+${password}`);
+        
+        const result=await authUser.findOne({email});
+        
+        console.log(result)
+        const token=await result.generateAuthToken();
+        console.log(token);
+        if(result.email==email && bcrypt.compare(result.password,password) ){
+            
+            res.sendFile(__dirname+"/home.html")
+        }else{
+            
+        }
+        
+        
+    }catch(e){
+        // res.status(400).send(e);
+        console.log(e)
+    }
+})
+
+
+app.post("/SignUp",async (req,res)=>{
+    try{
+        const email=req.body.email;
+        const password=req.body.password;
+        const confirmPassword=req.body.cPassword;
+        
+        const newUser= new authUser({
+            email:email,
+            password:password,
+            cPassword: confirmPassword
+        })
+        
+        console.log(`${newUser}`);
+        
+        const token =await newUser.generateAuthToken();
+        console.log(`token: ${token}`);
+        
+res.cookie("jwt",token,{
+    expires: new Date(Date.now() + 10000),
+    httpOnly: true
+});
+
+        const result =await newUser.save();
+        
+        res.send("Welcome");
+    }catch(e){
+        // res.status(400).send(e);
+        console.log(e)
+    }
+})
 
 // 
 // async function CreateUser(){
@@ -81,8 +148,8 @@ app.patch("/users/:id",async (req,res)=>{
 //         const result=await jaish.save();
 //         console.log(result);
 //     }catch(err){
-//         console.log(err);
-//     }
+    //         console.log(err);
+    //     }
 // }
 
 // const getDocument=async ()=>{

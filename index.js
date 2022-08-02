@@ -8,11 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+require('dotenv').config();
 require("./db/connection");
+const bodyParser = require("body-parser");
 // const userRouter=  require("./routes/routes")
-const users = require("./models/User.model");
+const User = require("./models/User.model");
+const authUser = require("./models/Auth.User.model");
 const express = require("express");
+const bcrypt = require("bcrypt");
 var app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use = (express.json());
 // app.use(userRouter);
 app.get('/', (req, res) => {
@@ -21,6 +27,10 @@ app.get('/', (req, res) => {
 app.get('/Signup', (req, res) => {
     res.sendFile(__dirname + "/Signup.html");
 });
+app.get("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // res.send("login")
+    res.sendFile(__dirname + "/Login.html");
+}));
 app.listen(2000, () => {
     console.log('Express server listening on port 3000');
 });
@@ -29,7 +39,7 @@ app.post('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         console.log(req.body);
         const user = new User(req.body);
         const result = yield user.save();
-        res.send("Hello");
+        res.render("Hello World");
     }
     catch (err) {
         console.log(err);
@@ -68,6 +78,51 @@ app.patch("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function
     }
     catch (err) {
         res.status(400).send(err);
+    }
+}));
+app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const email = req.body.email;
+        const password = req.body.password;
+        console.log(`${email}+" "+${password}`);
+        const result = yield authUser.findOne({ email });
+        console.log(result);
+        const token = yield result.generateAuthToken();
+        console.log(token);
+        if (result.email == email && bcrypt.compare(result.password, password)) {
+            res.sendFile(__dirname + "/home.html");
+        }
+        else {
+        }
+    }
+    catch (e) {
+        // res.status(400).send(e);
+        console.log(e);
+    }
+}));
+app.post("/SignUp", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const email = req.body.email;
+        const password = req.body.password;
+        const confirmPassword = req.body.cPassword;
+        const newUser = new authUser({
+            email: email,
+            password: password,
+            cPassword: confirmPassword
+        });
+        console.log(`${newUser}`);
+        const token = yield newUser.generateAuthToken();
+        console.log(`token: ${token}`);
+        res.cookie("jwt", token, {
+            expires: new Date(Date.now() + 10000),
+            httpOnly: true
+        });
+        const result = yield newUser.save();
+        res.send("Welcome");
+    }
+    catch (e) {
+        // res.status(400).send(e);
+        console.log(e);
     }
 }));
 // 
