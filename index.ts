@@ -33,7 +33,7 @@ app.get('/getUser',auth, (req, res) => {
 app.post('/getUser',auth,async (req, res) => {
     try{
         const id=req.body.id;
-        
+        console.log(id);
         const result= await User.findById({_id:id})
         if(!result){
             return res.status(404).send();

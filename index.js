@@ -38,6 +38,7 @@ app.get('/getUser', auth, (req, res) => {
 app.post('/getUser', auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.body.id;
+        console.log(id);
         const result = yield User.findById({ _id: id });
         if (!result) {
             return res.status(404).send();
