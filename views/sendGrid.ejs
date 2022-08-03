@@ -1,0 +1,10 @@
+<%- include('header.ejs') %> 
+
+<form action="/sendMail" method="post">
+
+    <input class="form-control m-3 w-50  d-flex align-items-center justify-content-center" type="email" name="senderMail" id="" placeholder="Enter SenderMail Address">
+    <input class="form-control m-3 w-50 d-flex align-items-center justify-content-center" type="email" name="recieverMail" id="" placeholder="Enter RecieverMail Address">
+    <input class="form-control m-3 w-50 d-flex align-items-center justify-content-center" type="text" name="subject" id="" placeholder="Enter Subject ">
+    <input class="form-control m-3 w-50 d-flex align-items-center justify-content-center" type="text" name="text" id="" placeholder="Enter Email Content ">
+    <input type="submit" class="btn btn-primary m-3 d-flex align-items-center justify-content-center" name="" id="">
+</form>

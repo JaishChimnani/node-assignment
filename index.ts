@@ -8,7 +8,10 @@ const authUser= require("./models/Auth.User.model");
 const express = require("express");
 const bcrypt   = require("bcrypt");
 const auth = require("./auth");
-const sendGrid = require("sendgrid");
+const sendGrid = require("@sendgrid/mail");
+
+const API_KEY="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";
+sendGrid.setApiKey(API_KEY);
 
 var app =express();
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -18,11 +21,35 @@ app.use(cookieParser());
 // app.use(userRouter);
 app.set('view engine', 'ejs');
 
+
+
+app.post('/sendMail', async (req, res) => {
+    const senderMail=req.body.senderMail;
+    const recieverMail = req.body.recieverMail;
+    const subject=req.body.subject;
+    const text=req.body.text;
+    
+    const message={
+        to:recieverMail,
+        from:senderMail,
+        subject:subject,
+        text:text,
+        
+    }
+    sendGrid.send(message).then(response => {res.send(message);})
+    .catch(err => {res.send(err );});
+    
+})
+
+app.get("/sendMail",auth, (req, res) => {
+    res.render('sendGrid')
+})
 app.get('/logout', (req, res) => {
     try {
         
         res.clearCookie("jwt");
         res.send("logged out");
+        res.redirect('/login');
     } catch (error) {
         alert("You must log in before")
         res.redirect("/login");
@@ -55,16 +82,16 @@ app.post('/users',async (req, res) => {
         console.log(req.body);
         const user=new User(req.body);
         const result=await user.save();
-        res.render("Hello World");
+        res.send("Hello World");
     }catch(err) {
         console.log(err);
     }
 })
 
-app.get('/users',async (req, res) => {
+app.get('/users',auth,async (req, res) => {
     try{
         const result= await User.find();
-        console.log(result);
+        res.send(result);
     }catch(err) {
         console.log(err);
     }

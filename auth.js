@@ -28,6 +28,8 @@ const auth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () 
     }
     catch (error) {
         console.log(error);
+        // alert("session Expired");
+        res.redirect('/login');
     }
 });
 module.exports = auth;

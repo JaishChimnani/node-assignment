@@ -21,6 +21,8 @@ try {
     
 } catch (error) {
     console.log(error);
+    // alert("session Expired");
+    res.redirect('/login');
 }
 }
 
