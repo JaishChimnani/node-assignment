@@ -19,6 +19,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const auth = require("./auth");
 const sendGrid = require("@sendgrid/mail");
+const ExcelJs = require("exceljs");
 const API_KEY = "";
 sendGrid.setApiKey(API_KEY);
 var app = express();
@@ -28,6 +29,27 @@ app.use(express.json());
 app.use(cookieParser());
 // app.use(userRouter);
 app.set('view engine', 'ejs');
+app.get('/addUser', auth, (req, res) => {
+    res.render('form');
+});
+app.get('/getUser', auth, (req, res) => {
+    res.render('GetUser');
+});
+app.post('/getUser', auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.body.id;
+        const result = yield User.findById({ _id: id });
+        if (!result) {
+            return res.status(404).send();
+        }
+        else {
+            res.send(result);
+        }
+    }
+    catch (err) {
+        console.log(err);
+    }
+}));
 app.post('/sendMail', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const senderMail = req.body.senderMail;
     const recieverMail = req.body.recieverMail;
@@ -42,13 +64,16 @@ app.post('/sendMail', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     sendGrid.send(message).then(response => { res.send(message); })
         .catch(err => { res.send(err); });
 }));
+app.get('/deleteUser', auth, (req, res) => {
+    res.render('deleteUser');
+});
 app.get("/sendMail", auth, (req, res) => {
     res.render('sendGrid');
 });
 app.get('/logout', (req, res) => {
     try {
         res.clearCookie("jwt");
-        res.send("logged out");
+        // res.send("logged out");
         res.redirect('/login');
     }
     catch (error) {
@@ -71,15 +96,38 @@ app.get("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 app.get("/home", auth, (req, res) => {
     res.render("home");
 });
+app.get("/updateUser", auth, (req, res) => {
+    res.render("UpdateUser");
+});
 app.listen(2000, () => {
     console.log('Express server listening on port 3000');
 });
+app.post('/deleteUser', auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.body.id;
+        ;
+        const result = yield User.remove({ _id: id });
+        res.send(result);
+    }
+    catch (err) {
+        res.send(err);
+    }
+}));
 app.post('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log(req.body);
-        const user = new User(req.body);
-        const result = yield user.save();
-        res.send("Hello World");
+        const email = req.body.email;
+        const name = req.body.name;
+        const phoneNumber = req.body.phoneNumber;
+        const newUser = new User({
+            email: email,
+            name: name,
+            phoneNumber: phoneNumber
+        });
+        res.send(newUser);
+        // console.log(req.body);
+        // const user=new User(req.body);
+        // const result=await user.save();
+        // res.send("Hello World");
     }
     catch (err) {
         console.log(err);
@@ -202,3 +250,30 @@ app.post("/SignUp", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 // // CreateUser();
 // // getDocument();
 // // module.exports=router;
+app.get('/sheet', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield User.find();
+        const workbook = new ExcelJs.Workbook();
+        const worksheet = workbook.addWorksheet('My Users');
+        worksheet.columns = [
+            { header: 'S.no', key: 's_no', width: 10 },
+            { header: 'name', key: 'name', width: 10 },
+            { header: 'Email', key: 'email', width: 10 },
+            { header: 'phoneNumber', key: 'phoneNumber', width: 10 }
+        ];
+        let count = 1;
+        users.forEach(user => {
+            user.s_no = count;
+            worksheet.addRow(user);
+            count += 1;
+        });
+        worksheet.getRow(1).eachCell((cell) => {
+            cell.font = { bold: true };
+        });
+        const data = yield workbook.xlsx.writeFile('users.xlsx');
+        res.send('done');
+    }
+    catch (e) {
+        res.status(500).send(e);
+    }
+}));

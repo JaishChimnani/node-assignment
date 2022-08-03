@@ -1,28 +1,30 @@
 <%- include('header.ejs') %> 
-Send An Email Through SendGrid<a href="/sendMail"> Click here</a>
 
+<h3>Send An Email Through SendGrid<a href="/sendMail"> Click here</a></h3>
+<h3>Download the data in excel format  <a href="/sheet"> Click Here</a> the sheet will automatically be downloaded in the source folder
+</h3>
 <div class="m-3 p-3 d-flex align-items-center justify-content-center ">
-<form action="/Users" method="post">
+<form >
 
-    <a href="/">    <button type="submit" class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Add User</button></a>
+    <a href="/addUser"  class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Add User</a>
 </form>
 <form action="/users" method="get">
 
     <a href="/">    <button type="submit" class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Get All Users</button></a>
 </form>
-<form action="/users/" method="get">
+<!-- <form action="/users/" method="get"> -->
 
-    <a href="/">     <button type="submit" class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Get User by id</button></a>
-</form>
-<form action="/users" method="post">
+    <a href="/getuser">     <button type="submit" class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Get User by id</button></a>
+<!-- </form> -->
+<!-- <form action="/users" method="post"> -->
 
-    <a href="/">    <button class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Update User by ID</button></a>
-</form>
-<a href="/">    <button class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Delete User by ID</button></a>
+    <!-- <a href="/updateUser">    <button class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Update User by ID</button></a> -->
+<!-- </form> -->
+<a href="/deleteUser">    <button class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Delete User by ID</button></a>
 </div>
-<%- include('form.ejs') %> 
+<!-- <%- include('form.ejs') %>  -->
 
-<script src="../home.ts"></script>
+
 
 
 </body>
