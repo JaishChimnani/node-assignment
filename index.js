@@ -211,11 +211,14 @@ app.post("/SignUp", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             httpOnly: true
         });
         const result = yield newUser.save();
-        res.sendFile(__dirname + "/home.html");
+        res.redirect("/login");
     }
     catch (e) {
         // res.status(400).send(e);
         console.log(e);
+        // alert("Error")
+        res.send(e);
+        // res.redirect("/signup");
     }
 }));
 // 

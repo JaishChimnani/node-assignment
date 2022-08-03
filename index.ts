@@ -228,10 +228,13 @@ res.cookie("jwt",token,{
 
         const result =await newUser.save();
         
-        res.sendFile(__dirname+"/home.html")
+        res.redirect("/login");
     }catch(e){
         // res.status(400).send(e);
         console.log(e)
+        // alert("Error")
+        res.send(e);
+        // res.redirect("/signup");
     }
 })
 

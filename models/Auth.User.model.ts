@@ -11,13 +11,11 @@ const authUserSchema=new mongoose.Schema({
     },
     password:{
         type:'string',
-        required:true,
-        minlength:6
+        required:true
     },
     cPassword:{
         type:'string',
-        required:true,
-        minlength:6
+        required:true
     },
     tokens:[{
         token:{
