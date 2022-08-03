@@ -2,8 +2,23 @@
 Send An Email Through SendGrid<a href="/sendMail"> Click here</a>
 
 <div class="m-3 p-3 d-flex align-items-center justify-content-center ">
+<form action="/Users" method="post">
 
-<a href="/a"></a>    <button class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Add User</button>
+    <a href="/">    <button type="submit" class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Add User</button></a>
+</form>
+<form action="/users" method="get">
+
+    <a href="/">    <button type="submit" class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Get All Users</button></a>
+</form>
+<form action="/users/" method="get">
+
+    <a href="/">     <button type="submit" class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Get User by id</button></a>
+</form>
+<form action="/users" method="post">
+
+    <a href="/">    <button class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Update User by ID</button></a>
+</form>
+<a href="/">    <button class="btn btn-primary m-3 p-3 d-flex align-items-center justify-content-center w-30" >Delete User by ID</button></a>
 </div>
 <%- include('form.ejs') %> 
 

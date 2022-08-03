@@ -19,7 +19,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const auth = require("./auth");
 const sendGrid = require("@sendgrid/mail");
-const API_KEY = "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";
+const API_KEY = "";
 sendGrid.setApiKey(API_KEY);
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
