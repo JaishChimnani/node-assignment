@@ -1,4 +1,5 @@
 require('dotenv').config();
+const cookieParser = require('cookie-parser');
 require("./db/connection")
 const bodyParser=require("body-parser")
 // const userRouter=  require("./routes/routes")
@@ -6,25 +7,42 @@ const User= require("./models/User.model")
 const authUser= require("./models/Auth.User.model");
 const express = require("express");
 const bcrypt   = require("bcrypt");
+const auth = require("./auth");
 
 var app =express();
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use=(express.json());
+app.use(express.json());
+app.use(cookieParser());
 // app.use(userRouter);
+app.set('view engine', 'ejs');
 
-
-app.get('/', (req, res) => {
-    res.sendFile(__dirname+"/Login.html");
-});
-app.get('/Signup', (req, res) => {
-    res.sendFile(__dirname+"/Signup.html");
-});
-app.get("/login", async (req,res)=>{
-    // res.send("login")
-    res.sendFile(__dirname+"/Login.html");
+app.get('/logout', (req, res) => {
+    try {
+        
+        res.clearCookie("jwt");
+        res.send("logged out");
+    } catch (error) {
+        alert("You must log in before")
+        res.redirect("/login");
+    }
 })
 
+app.get('/', (req, res) => {
+    res.render('login');
+});
+app.get('/Signup', (req, res) => {
+    res.render('signup');
+    // res.sendFile(__dirname+"/Signup.html");
+});
+app.get("/login", async (req,res)=>{
+    res.render('login');
+    // res.send("login")
+    // res.sendFile(__dirname+"/Login.html");
+})
+app.get("/home", auth ,(req,res)=>{
+res.render("home");
+})
 
 app.listen(2000,()=>{
     console.log('Express server listening on port 3000');
@@ -89,9 +107,15 @@ app.post("/login",async (req,res)=>{
         console.log(result)
         const token=await result.generateAuthToken();
         console.log(token);
+               
+res.cookie("jwt",token,{
+    expires: new Date(Date.now() + 360000),
+    httpOnly: true
+});
+
         if(result.email==email && bcrypt.compare(result.password,password) ){
             
-            res.sendFile(__dirname+"/home.html")
+            res.render('home');
         }else{
             
         }
@@ -122,13 +146,13 @@ app.post("/SignUp",async (req,res)=>{
         console.log(`token: ${token}`);
         
 res.cookie("jwt",token,{
-    expires: new Date(Date.now() + 10000),
+    expires: new Date(Date.now() + 360000),
     httpOnly: true
 });
 
         const result =await newUser.save();
         
-        res.send("Welcome");
+        res.sendFile(__dirname+"/home.html")
     }catch(e){
         // res.status(400).send(e);
         console.log(e)

@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 require('dotenv').config();
+const cookieParser = require('cookie-parser');
 require("./db/connection");
 const bodyParser = require("body-parser");
 // const userRouter=  require("./routes/routes")
@@ -16,21 +17,39 @@ const User = require("./models/User.model");
 const authUser = require("./models/Auth.User.model");
 const express = require("express");
 const bcrypt = require("bcrypt");
+const auth = require("./auth");
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use = (express.json());
+app.use(express.json());
+app.use(cookieParser());
 // app.use(userRouter);
+app.set('view engine', 'ejs');
+app.get('/logout', (req, res) => {
+    try {
+        res.clearCookie("jwt");
+        res.send("logged out");
+    }
+    catch (error) {
+        alert("You must log in before");
+        res.redirect("/login");
+    }
+});
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + "/Login.html");
+    res.render('login');
 });
 app.get('/Signup', (req, res) => {
-    res.sendFile(__dirname + "/Signup.html");
+    res.render('signup');
+    // res.sendFile(__dirname+"/Signup.html");
 });
 app.get("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render('login');
     // res.send("login")
-    res.sendFile(__dirname + "/Login.html");
+    // res.sendFile(__dirname+"/Login.html");
 }));
+app.get("/home", auth, (req, res) => {
+    res.render("home");
+});
 app.listen(2000, () => {
     console.log('Express server listening on port 3000');
 });
@@ -89,8 +108,12 @@ app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         console.log(result);
         const token = yield result.generateAuthToken();
         console.log(token);
+        res.cookie("jwt", token, {
+            expires: new Date(Date.now() + 360000),
+            httpOnly: true
+        });
         if (result.email == email && bcrypt.compare(result.password, password)) {
-            res.sendFile(__dirname + "/home.html");
+            res.render('home');
         }
         else {
         }
@@ -114,11 +137,11 @@ app.post("/SignUp", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const token = yield newUser.generateAuthToken();
         console.log(`token: ${token}`);
         res.cookie("jwt", token, {
-            expires: new Date(Date.now() + 10000),
+            expires: new Date(Date.now() + 360000),
             httpOnly: true
         });
         const result = yield newUser.save();
-        res.send("Welcome");
+        res.sendFile(__dirname + "/home.html");
     }
     catch (e) {
         // res.status(400).send(e);
