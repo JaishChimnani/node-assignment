@@ -83,7 +83,7 @@ app.get('/logout', (req, res) => {
     }
 });
 app.get('/', (req, res) => {
-    res.render('login');
+    res.render('header');
 });
 app.get('/Signup', (req, res) => {
     res.render('signup');
