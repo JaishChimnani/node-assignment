@@ -8,6 +8,7 @@ const authUser= require("./models/Auth.User.model");
 const express = require("express");
 const bcrypt   = require("bcrypt");
 const auth = require("./auth");
+const sendGrid = require("sendgrid");
 
 var app =express();
 app.use(bodyParser.urlencoded({ extended: false }))

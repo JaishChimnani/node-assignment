@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
     "@types/Express": "npm:@types/express@^4.17.13",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.20.0",
